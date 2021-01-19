@@ -14,6 +14,9 @@ class Config {
       ec2InstanceId: core.getInput('ec2-instance-id'),
     };
 
+    const tags = JSON.parse(core.getInput('aws-resource-tags'));
+    this.tagSpecifications = [{ResourceType: 'instance', Tags: tags}, {ResourceType: 'volume', Tags: tags}];
+
     // the values of github.context.repo.owner and github.context.repo.repo are taken from
     // the environment variable GITHUB_REPOSITORY specified in "owner/repo" format and
     // provided by the GitHub Action on the runtime

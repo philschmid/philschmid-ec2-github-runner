@@ -85,6 +85,21 @@ Use the following steps to prepare your workflow for running on your EC2 self-ho
 
    The policy can be limited even more by specifying the resources you use.
 
+   If you use the `aws-resource-tags` parameter, you will need to also allow the role to create tags, for example by adding another statement:
+   ```
+   {
+     "Effect": "Allow",
+     "Action": "ec2:CreateTags",
+     "Resource": "*",
+     "Condition": {
+       "StringEquals": {
+         "ec2:CreateAction": "RunInstances"
+       }
+     }
+   }
+   ```
+
+
 2. Add the keys to GitHub secrets.
 3. Use the [aws-actions/configure-aws-credentials](https://github.com/aws-actions/configure-aws-credentials) action to set up the keys as environment variables.
 
@@ -143,6 +158,7 @@ Now you're ready to go!
 | `security-group-id`                                                                                                                                                          | Required if you use the `start` mode. | EC2 Security Group Id. <br><br> The security group should belong to the same VPC as the specified subnet. <br><br> Only the outbound traffic for port 443 should be allowed. No inbound traffic is required.                        |
 | `label`                                                                                                                                                                      | Required if you use the `stop` mode.  | Name of the unique label assigned to the runner. <br><br> The label is provided by the output of the action in the `start` mode. <br><br> The label is used to remove the runner from GitHub when the runner is not needed anymore. |
 | `ec2-instance-id`                                                                                                                                                            | Required if you use the `stop` mode.  | EC2 Instance Id of the created runner. <br><br> The id is provided by the output of the action in the `start` mode. <br><br> The id is used to terminate the EC2 instance when the runner is not needed anymore.                    |
+| `aws-resource-tags`                                                                                                                                                          | Optional | Specfies tags to add to the EC2 instance and any attached storge. <br><br> This field is a stringified JSON array of tag objects, each containing a Key and Value field (see Example below). <br><br>Setting this requires additional AWS permissions for the role launching the instance. |
 
 ### Environment variables
 
@@ -193,6 +209,12 @@ jobs:
           ec2-instance-type: t3.nano
           subnet-id: subnet-123
           security-group-id: sg-123
+          # Optional tags
+          aws-resource-tags: >
+            [
+              {"Key": "GithubRepository", "Value": "${{ github.repository }}"},
+              {"Key": "UsefulKey", "Value": "InterestingValue"}
+            ]
   do-the-job:
     name: Do the job on the runner
     runs-on: ${{ needs.start-runner.outputs.label }} # run the job on the newly created runner
