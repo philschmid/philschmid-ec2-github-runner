@@ -25,7 +25,8 @@ async function startEc2Instance(label, githubRegistrationToken) {
     UserData: Buffer.from(userData.join('\n')).toString('base64'),
     SubnetId: config.input.subnetId,
     SecurityGroupIds: [config.input.securityGroupId],
-    IamInstanceProfile: {Name: config.input.iamRoleName}
+    IamInstanceProfile: {Name: config.input.iamRoleName},
+    TagSpecifications: config.input.TagSpecifications,
   };
 
   try {

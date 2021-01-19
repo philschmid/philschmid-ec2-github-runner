@@ -13,6 +13,10 @@ class Config {
       label: core.getInput('label'),
       ec2InstanceId: core.getInput('ec2-instance-id'),
       iamRoleName: core.getInput('iam-role-name'),
+      TagSpecifications: [{ResourceType: 'instance|volume', Tags: [
+        {Key: 'GH_ACTIONS_RUNNER_REPO', Value: github.context.repo.repo},
+        ...JSON.parse(core.getInput('aws-resource-tags')),
+        ]}]
     };
 
     // the values of github.context.repo.owner and github.context.repo.repo are taken from
