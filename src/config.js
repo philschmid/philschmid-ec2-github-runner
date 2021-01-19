@@ -17,7 +17,7 @@ class Config {
       label: core.getInput('label'),
       ec2InstanceId: core.getInput('ec2-instance-id'),
       iamRoleName: core.getInput('iam-role-name'),
-      TagSpecifications: [{ResourceType: 'instance', Tags: tags}, {ResourceType: 'volume', Tags: tags}]
+      TagSpecifications: [{ResourceType: 'instance', Tags: tags}],
     };
 
     // the values of github.context.repo.owner and github.context.repo.repo are taken from
