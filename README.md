@@ -239,16 +239,13 @@ jobs:
           ec2-instance-type: t3.nano
           subnet-id: subnet-123
           security-group-id: sg-123
-<<<<<<< .merge_file_Nr3GED
           iam-role-name: my-role-name # optional, requires additional permissions
-=======
           # Optional tags
           aws-resource-tags: >
             [
               {"Key": "GithubRepository", "Value": "${{ github.repository }}"},
               {"Key": "UsefulKey", "Value": "InterestingValue"}
             ]
->>>>>>> .merge_file_sIedLy
   do-the-job:
     name: Do the job on the runner
     runs-on: ${{ needs.start-runner.outputs.label }} # run the job on the newly created runner
