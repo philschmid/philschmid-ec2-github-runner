@@ -3,8 +3,16 @@ const github = require('@actions/github');
 
 class Config {
   constructor() {
+    // the values of github.context.repo.owner and github.context.repo.repo are taken from
+    // the environment variable GITHUB_REPOSITORY specified in "owner/repo" format and
+    // provided by the GitHub Action on the runtime
+    this.githubContext = {
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo,
+    };
+
     const tags = [
-      {Key: 'GH_ACTIONS_RUNNER_REPO', Value: github.context.repo.repo},
+      {Key: 'RunningForRepo', Value: `${this.githubContext.owner}/${this.githubContext.repo}`},
       ...JSON.parse(core.getInput('aws-resource-tags')),
     ];
     this.input = {
@@ -17,15 +25,7 @@ class Config {
       label: core.getInput('label'),
       ec2InstanceId: core.getInput('ec2-instance-id'),
       iamRoleName: core.getInput('iam-role-name'),
-      TagSpecifications: [{ResourceType: 'instance', Tags: tags}],
-    };
-
-    // the values of github.context.repo.owner and github.context.repo.repo are taken from
-    // the environment variable GITHUB_REPOSITORY specified in "owner/repo" format and
-    // provided by the GitHub Action on the runtime
-    this.githubContext = {
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
+      TagSpecifications: [{ResourceType: 'instance', Tags: tags}, {ResourceType: 'volume', Tags: tags}],
     };
 
     //
