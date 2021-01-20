@@ -16,7 +16,12 @@ class Config {
     };
 
     const tags = JSON.parse(core.getInput('aws-resource-tags'));
-    this.tagSpecifications = [{ResourceType: 'instance', Tags: tags}, {ResourceType: 'volume', Tags: tags}];
+    if (tags.length > 0) {
+      this.tagSpecifications = [{ResourceType: 'instance', Tags: tags}, {ResourceType: 'volume', Tags: tags}];
+    }
+    else {
+      tags.tagSpecifications = null;
+    }
 
     // the values of github.context.repo.owner and github.context.repo.repo are taken from
     // the environment variable GITHUB_REPOSITORY specified in "owner/repo" format and
