@@ -12,7 +12,11 @@ class Config {
       securityGroupId: core.getInput('security-group-id'),
       label: core.getInput('label'),
       ec2InstanceId: core.getInput('ec2-instance-id'),
+      iamRoleName: core.getInput('iam-role-name'),
     };
+
+    const tags = JSON.parse(core.getInput('aws-resource-tags'));
+    this.tagSpecifications = [{ResourceType: 'instance', Tags: tags}, {ResourceType: 'volume', Tags: tags}];
 
     // the values of github.context.repo.owner and github.context.repo.repo are taken from
     // the environment variable GITHUB_REPOSITORY specified in "owner/repo" format and

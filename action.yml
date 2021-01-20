@@ -49,6 +49,18 @@ inputs:
       The id is used to terminate the EC2 instance when the runner is not needed anymore.
       This input is required if you use the 'stop' mode.
     required: false
+  iam-role-name:
+    description: >-
+      IAM Role Name to attach to the created runner.
+      This requires additional permissions on the AWS role used to launch instances.
+    required: false
+  aws-resource-tags:
+    description: >-
+      Tags to attach to the launched ec2 instance and volume.
+      This must be a stringified array of AWS Tag objects, with both Key and Value fields,
+      for example: '[{"Key": "TagKey1", "Value": "TagValue1"}, {"Key": "TagKey2", "Value": "TagValue2"}]'
+    required: false
+    default: '[]'
 outputs:
   label:
     description: >-
