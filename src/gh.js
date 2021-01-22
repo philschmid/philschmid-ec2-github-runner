@@ -53,7 +53,7 @@ async function removeRunner() {
 
 async function waitForRunnerCreated(label) {
   const timeoutMinutes = 10;
-  const retryIntervalSeconds = 1;
+  const retryIntervalSeconds = 20;
   let waitSeconds = 0;
 
   return new Promise((resolve, reject) => {
@@ -63,12 +63,13 @@ async function waitForRunnerCreated(label) {
       if (waitSeconds > timeoutMinutes * 60) {
         core.error('GitHub self-hosted runner creation error');
         reject(`Timeout of ${timeoutMinutes} minutes is exceeded`);
+        clearInterval(interval);
       }
 
       if (runner && runner.status === 'online') {
         core.info(`GitHub self-hosted runner ${runner.name} is created and ready to use`);
-        clearInterval(interval);
         resolve();
+        clearInterval(interval);
       } else {
         waitSeconds += retryIntervalSeconds;
       }
