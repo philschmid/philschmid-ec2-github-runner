@@ -68,9 +68,6 @@ async function waitForInstanceRunning(ec2InstanceId) {
     core.info('Waiting for instanceRunning');
     await ec2.waitFor('instanceRunning', params).promise();
     core.info(`AWS EC2 instance ${ec2InstanceId} running`);
-    core.info('Waiting for instanceStatusOk');
-    await ec2.waitFor('instanceStatusOk', params).promise();
-    core.info(`AWS EC2 instance ${ec2InstanceId} status is OK`);
     return;
   } catch (error) {
     core.error(`AWS EC2 instance ${ec2InstanceId} init error`);
