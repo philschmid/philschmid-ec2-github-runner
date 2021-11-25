@@ -29,7 +29,6 @@ class Config {
     this.githubContext = {
       owner: github.context.repo.owner,
       repo: github.context.repo.repo,
-      per_page: 100,
     };
 
     //

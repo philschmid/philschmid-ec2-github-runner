@@ -8,8 +8,10 @@ const config = require('./config');
 async function getRunner(label) {
   const octokit = github.getOctokit(config.input.githubToken);
 
+  const parameters = Object.assign(config.githubContext);
+  parameters.per_page = 100; // better yet, iterate all results from paginate
   try {
-    const runners = await octokit.paginate('GET /repos/{owner}/{repo}/actions/runners', config.githubContext, 100);
+    const runners = await octokit.paginate('GET /repos/{owner}/{repo}/actions/runners', parameters);
     const foundRunners = _.filter(runners, { labels: [{ name: label }] });
     return foundRunners.length > 0 ? foundRunners : null;
   } catch (error) {
