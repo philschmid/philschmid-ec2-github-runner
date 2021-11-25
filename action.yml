@@ -43,10 +43,10 @@ inputs:
       The label is used to remove the runner from GitHub when the runner is not needed anymore.
       This input is required if you use the 'stop' mode.
     required: false
-  ec2-instance-id:
+  ec2-instance-ids:
     description: >-
-      EC2 Instance Id of the created runner.
-      The id is used to terminate the EC2 instance when the runner is not needed anymore.
+      EC2 Instance Id(s) of the created runner(s).
+      The Id(s) are used to terminate the EC2 instance(s) when the runner is not needed anymore.
       This input is required if you use the 'stop' mode.
     required: false
   iam-role-name:
