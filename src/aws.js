@@ -67,10 +67,10 @@ async function terminateEc2Instance() {
 
   try {
     await ec2.terminateInstances(params).promise();
-    core.info(`AWS EC2 instance ${config.input.ec2InstanceIds} are terminated`);
+    core.info(`AWS EC2 instances ${config.input.ec2InstanceIds} are terminated`);
     return;
   } catch (error) {
-    core.error(`AWS EC2 instance ${config.input.ec2InstanceIds} termination error`);
+    core.error(`AWS EC2 instances ${config.input.ec2InstanceIds} termination error`);
     throw error;
   }
 }
@@ -84,10 +84,10 @@ async function waitForInstanceRunning(ec2InstanceIds) {
 
   try {
     await ec2.waitFor('instanceRunning', params).promise();
-    core.info(`AWS EC2 instance ${ec2InstanceIds} is up and running`);
+    core.info(`AWS EC2 instances ${ec2InstanceIds} are up and running`);
     return;
   } catch (error) {
-    core.error(`AWS EC2 instance ${ec2InstanceIds} initialization error`);
+    core.error(`AWS EC2 instances ${ec2InstanceIds} initialization error`);
     throw error;
   }
 }
