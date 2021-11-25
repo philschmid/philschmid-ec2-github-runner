@@ -69,7 +69,7 @@ async function waitForRunnerRegistered(label) {
 
   return new Promise((resolve, reject) => {
     const interval = setInterval(async () => {
-      const runner = await getRunner(label);
+      const runners = await getRunner(label);
 
       if (waitSeconds > timeoutMinutes * 60) {
         core.error('GitHub self-hosted runner registration error');
@@ -77,14 +77,15 @@ async function waitForRunnerRegistered(label) {
         reject(`A timeout of ${timeoutMinutes} minutes is exceeded. Your AWS EC2 instance was not able to register itself in GitHub as a new self-hosted runner.`);
       }
 
-      if (runner && runner.status === 'online') {
-        core.info(`GitHub self-hosted runner ${runner.name} is registered and ready to use`);
+      if (runners && runners.every((runner => runner.status === 'online'))) {
+        core.info(`GitHub self-hosted runners ${runners} are registered and ready to use`);
         clearInterval(interval);
         resolve();
       } else {
         waitSeconds += retryIntervalSeconds;
         core.info('Checking...');
       }
+
     }, retryIntervalSeconds * 1000);
   });
 }
