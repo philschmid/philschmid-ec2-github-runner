@@ -45,7 +45,7 @@ async function removeRunner() {
   core.info('found runners');
   core.info(runners);
   const errors = [];
-  for (const runner in runners) {
+  for (const runner of runners) {
     core.info(`Requesting removal of runner ${runner}`)
     try {
       await octokit.request('DELETE /repos/{owner}/{repo}/actions/runners/{runner_id}', _.merge(config.githubContext, { runner_id: runner.id }));
