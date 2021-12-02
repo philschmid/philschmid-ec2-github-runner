@@ -9,8 +9,8 @@ async function getRunner(label) {
   const octokit = github.getOctokit(config.input.githubToken);
 
   try {
-    const response = await octokit.request('GET /repos/{owner}/{repo}/actions/runners', config.githubContext);
-    const foundRunners = _.filter(response.data.runners, { labels: [{ name: label }] });
+    const runners = await octokit.paginate('GET /repos/{owner}/{repo}/actions/runners', config.githubContext);
+    const foundRunners = _.filter(runners, { labels: [{ name: label }] });
     return foundRunners.length > 0 ? foundRunners[0] : null;
   } catch (error) {
     return null;
@@ -51,33 +51,35 @@ async function removeRunner() {
   }
 }
 
-async function waitForRunnerCreated(label) {
+async function waitForRunnerRegistered(label) {
   const timeoutMinutes = 5;
   const retryIntervalSeconds = 10;
   const quietPeriodSeconds = 30;
   let waitSeconds = 0;
 
-  core.info(`Waiting ${quietPeriodSeconds}s before polling for runner`);
-  await new Promise(r => setTimeout(r, quietPeriodSeconds * 1000));
-  core.info(`Polling for runner every ${retryIntervalSeconds}s`);
+  core.info(`Waiting ${quietPeriodSeconds}s for the AWS EC2 instance to be registered in GitHub as a new self-hosted runner`);
+  await new Promise((r) => setTimeout(r, quietPeriodSeconds * 1000));
+  core.info(`Checking every ${retryIntervalSeconds}s if the GitHub self-hosted runner is registered`);
 
   return new Promise((resolve, reject) => {
     const interval = setInterval(async () => {
       const runner = await getRunner(label);
 
       if (waitSeconds > timeoutMinutes * 60) {
-        core.error('GitHub self-hosted runner creation error');
+        core.error('GitHub self-hosted runner registration error');
         clearInterval(interval);
-        reject(`A timeout of ${timeoutMinutes} minutes is exceeded. Please ensure your EC2 instance has access to the Internet.`);
+        reject(
+          `A timeout of ${timeoutMinutes} minutes is exceeded. Your AWS EC2 instance was not able to register itself in GitHub as a new self-hosted runner.`
+        );
       }
 
       if (runner && runner.status === 'online') {
-        core.info(`GitHub self-hosted runner ${runner.name} is created and ready to use`);
+        core.info(`GitHub self-hosted runner ${runner.name} is registered and ready to use`);
         clearInterval(interval);
         resolve();
       } else {
         waitSeconds += retryIntervalSeconds;
-        core.info('Waiting...');
+        core.info('Checking...');
       }
     }, retryIntervalSeconds * 1000);
   });
@@ -86,5 +88,5 @@ async function waitForRunnerCreated(label) {
 module.exports = {
   getRegistrationToken,
   removeRunner,
-  waitForRunnerCreated,
+  waitForRunnerRegistered,
 };

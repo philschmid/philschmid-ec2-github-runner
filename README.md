@@ -1,4 +1,9 @@
+# That is a Fork of https://github.com/machulav/ec2-github-runner to enable mutli subnets
+
+
 # On-demand self-hosted AWS EC2 runner for GitHub Actions
+
+[![awesome-runners](https://img.shields.io/badge/listed%20on-awesome--runners-blue.svg)](https://github.com/jonico/awesome-runners)
 
 Start your EC2 [self-hosted runner](https://docs.github.com/en/free-pro-team@latest/actions/hosting-your-own-runners) right before you need it.
 Run the job on it.
@@ -36,10 +41,12 @@ For example, you can access your database in the private subnet to run the datab
 
 ### Customize hardware configuration
 
-Some of your CI workloads may require more powerful hardware that GitHub-hosted runners provide.
+GitHub provides one fixed hardware configuration for their Linux virtual machines: 2-core CPU, 7 GB of RAM, 14 GB of SSD disk space.
+
+Some of your CI workloads may require more powerful hardware than GitHub-hosted runners provide.
 In the action, you can configure any EC2 instance type for your runner that AWS provides.
 
-For example, you may run c5.4xlarge EC2 runner for some of your compute-intensive workloads.
+For example, you may run a c5.4xlarge EC2 runner for some of your compute-intensive workloads.
 Or r5.xlarge EC2 runner for workloads that process large data sets in memory.
 
 ### Save costs
@@ -189,6 +196,7 @@ Now you're ready to go!
 | `ec2-instance-id`                                                                                                                                                            | Required if you use the `stop` mode.       | EC2 Instance Id of the created runner. <br><br> The id is provided by the output of the action in the `start` mode. <br><br> The id is used to terminate the EC2 instance when the runner is not needed anymore.                                                                                                                      |
 | `iam-role-name`                                                                                                                                                              | Optional. Used only with the `start` mode. | IAM role name to attach to the created EC2 runner. <br><br> This allows the runner to have permissions to run additional actions within the AWS account, without having to manage additional GitHub secrets and AWS users. <br><br> Setting this requires additional AWS permissions for the role launching the instance (see above). |
 | `aws-resource-tags`                                                                                                                                                          | Optional. Used only with the `start` mode. | Specifies tags to add to the EC2 instance and any attached storage. <br><br> This field is a stringified JSON array of tag objects, each containing a `Key` and `Value` field (see example below). <br><br> Setting this requires additional AWS permissions for the role launching the instance (see above).                         |
+| `runner-home-dir`                                                                                                                                                              | Optional. Used only with the `start` mode. | Specifies a directory where pre-installed actions-runner software and scripts are located.<br><br> |
 
 ### Environment variables
 
@@ -231,7 +239,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Start EC2 runner
         id: start-ec2-runner
-        uses: machulav/ec2-github-runner@v1.0.2
+        uses: machulav/ec2-github-runner@v2
         with:
           mode: start
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
@@ -242,8 +250,8 @@ jobs:
           iam-role-name: my-role-name # optional, requires additional permissions
           aws-resource-tags: > # optional, requires additional permissions
             [
-              {"Key": "Name", "Value": "ec2-github-runner"}
-              {"Key": "GitHubRepository", "Value": "${{ github.repository }}"},
+              {"Key": "Name", "Value": "ec2-github-runner"},
+              {"Key": "GitHubRepository", "Value": "${{ github.repository }}"}
             ]
   do-the-job:
     name: Do the job on the runner
@@ -267,7 +275,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Stop EC2 runner
-        uses: machulav/ec2-github-runner@v1.0.2
+        uses: machulav/ec2-github-runner@v2
         with:
           mode: stop
           github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
